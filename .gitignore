@@ -1,6 +1,9 @@
 # 忽略数据文件夹
-/sample_traffic_pcap/*
-/sample_traffic_csv/*
+/data_train/*
+/data_test/*
+/data_pcap/*
+/data_csv/*
+/data_time_sequence/*
 
 # 忽略Vim交换文件
 *.swp
