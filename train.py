@@ -62,14 +62,14 @@ def select_examplars(page_sequence_file):
     row, col = len(sequence_matrix), len(sequence_matrix)
     distance_matrix = np.zeros((row, col))
     for r in range(row):
-        for c in range(col - r):
-            if r == c:  # 对于两个相同的时间序列，dist=0，减少计算时间
-                dist = 0
-            else:
-                dist = f_distance(sequence_matrix[r], sequence_matrix[c + r])
+        for j in range(col - r):
+            c = r + j
+            dist = 0.0
+            if r != c:  # 只计算不同序列之间的F-Distance值
+                dist = f_distance(sequence_matrix[r], sequence_matrix[c])
             # print dist
-            distance_matrix[r, c + r] = dist
-            distance_matrix[c + r, r] = dist
+            distance_matrix[r, c] = dist
+            distance_matrix[c, r] = dist
 
     sum_row = np.sum(distance_matrix, axis=1)  # 矩阵行求和
     idx_arr = np.argsort(sum_row)  # 返回的是sum_row中从小到大的元素对应的索引值
@@ -78,19 +78,27 @@ def select_examplars(page_sequence_file):
     # 存放每个网页的距离矩阵。每行的和，以及和从小到大的索引附加到末尾
     if not os.path.exists('distance_matrix'):
         os.mkdir('distance_matrix')
-    dist_file = open('distance_matrix' + page_sequence_file.split('/')[-1], 'w')
-    for r in row:
-        for c in col:
-            dist_file.write(distance_matrix[r, c] + ',')
-        dist_file.write(sum_row[r] + ',')
-        dist_file.write(idx_arr[r])
+    dist_file = open('distance_matrix/' + page_sequence_file.split('/')[-1], 'w')
+    for r in range(row):
+        for c in range(col):
+            dist_file.write(str(distance_matrix[r, c]) + ',')
+        dist_file.write(str(sum_row[r]) + ',')
+        dist_file.write(str(idx_arr[r]))
         dist_file.write('\n')
     dist_file.close()
+
+    # # 直接从文件中加载距离矩阵
+    # idx_arr = []
+    # file_path = 'distance_matrix/' + page_sequence_file.split('/')[-1]
+    # file_obj = open(file_path)
+    # reader = csv.reader(file_obj, delimiter=',')
+    # for line in reader:
+    #     idx_arr.append(string.atoi(line[-1]))
 
     # 存放训练模型
     if not os.path.exists('model'):
         os.mkdir('model')
-    page_examplar = open('model/page_examplars.csv', 'w')
+    page_examplar = open('model/page_examplars.csv', 'a')
     for i in range(3):
         for timestamp in sequence_matrix[idx_arr[i]]:
             page_examplar.write(str(timestamp) + ',')
@@ -111,8 +119,10 @@ if __name__ == '__main__':
         for p in pages:
             start_page = datetime.datetime.now()
             print p[:-4] + ' begins: ' + str(start_page)
+
             csvfile_path = 'data_train/' + g + '/' + p
             select_examplars(csvfile_path)
+
             end_page = datetime.datetime.now()
             print p[:-4] + ' done: ' + str(end_page)
             print 'Page cost: ' + str(end_page - start_page)
@@ -120,5 +130,5 @@ if __name__ == '__main__':
 
     end_train = datetime.datetime.now()
     print 'end_train time: ' + str(end_train)
-    print 'Training cost: ' + str(start_train - end_train)
+    print 'Training cost: ' + str(end_train - start_train)
     print 'Training finished.'

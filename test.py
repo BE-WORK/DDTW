@@ -56,12 +56,13 @@ def load_model():
     """
     model = []
     label = []
-    time_examplar = file('model/page_examplars', 'w')
+    time_examplar = file('model/page_examplars.csv')
     reader = csv.reader(time_examplar, delimiter=',')
     for time_sequence in reader:
         model.append(
             [string.atof(timestamp) for i, timestamp in enumerate(time_sequence) if i < len(time_sequence) - 1])
         label.append(time_sequence[-1])
+    time_examplar.close()
     return model, label
 
 
@@ -73,18 +74,25 @@ def classify_page(unclassified_page_file, model, label):
     :param label: 同步训练模型的标记列表。
     :return:没有返回值，分类结果写入文件。
     """
+    # print model
+    # print label
+
     # 创建存放分类结果文件夹
     if not os.path.exists('result'):
         os.mkdir('result')
 
     # 获取待分类的时间序列，按文件获取
     unclassified_matrix = time_sequences_to_matrix(unclassified_page_file)
-    result = open('result/classify_result.csv', 'w')
+
+    # 分类
+    result = open('result/classify_result.csv', 'a')
     for time_sequence in unclassified_matrix:
         dist_arr = []
         for examplar in model:
             dist = f_distance(time_sequence, examplar)
+            # print dist
             dist_arr.append(dist)
+        print dist_arr
         idx_arr = np.argsort(dist_arr)  #
         for i in range(3):  # 将排名前三的网页预测写入文件
             result.write(label[idx_arr[i]] + ',')
@@ -94,8 +102,8 @@ def classify_page(unclassified_page_file, model, label):
 
 
 if __name__ == '__main__':
-    start = datetime.datetime.now()
-    print 'Testing start time: ' + str(start)
+    start_test = datetime.datetime.now()
+    print 'Testing start time: ' + str(start_test)
 
     # 加载模型
     model, label = load_model()
@@ -103,11 +111,22 @@ if __name__ == '__main__':
     # 分类测试数据
     goods = os.listdir('data_test')
     for g in goods:
+        print g + ' begins: ' + str(datetime.datetime.now())
+
         pages = os.listdir('data_test/' + g)
         for p in pages:
+            start_page = datetime.datetime.now()
+            print p[:-4] + ' begins: ' + str(start_page)
+
             test_file_path = 'data_test/' + g + '/' + p
             classify_page(test_file_path, model, label)
 
-    end = datetime.datetime.now()
-    print 'Testing end time: ' + str(end)
-    print 'Testing cost: ' + str(end - start)
+            end_page = datetime.datetime.now()
+            print p[:-4] + ' ends: ' + str(end_page)
+            print 'page cost: ' + str(end_page - start_page)
+
+        print g + ' ends: ' + str(datetime.datetime.now())
+
+    end_test = datetime.datetime.now()
+    print 'Testing end_test time: ' + str(end_test)
+    print 'Testing cost: ' + str(end_test - start_test)

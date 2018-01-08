@@ -22,7 +22,7 @@ def extract_time_sequence():
         for p in pages:  # 遍历每一个网页
             fetches = os.listdir('data_csv/' + g + '/' + p)
             # 同一个网页的多次获取所得的时间序列写入同一个文件
-            time_seq_file = open('data_time_sequence/' + g + '/' + p + '.csv', 'a')
+            time_seq_file = open('data_time_sequence/' + g + '/' + p + '.csv', 'w')
             for f in fetches:
                 file_obj = file('data_csv/' + g + '/' + p + '/' + f)
                 reader = csv.reader(file_obj, delimiter=',')

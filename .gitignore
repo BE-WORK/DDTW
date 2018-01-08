@@ -4,6 +4,9 @@
 /data_pcap/*
 /data_csv/*
 /data_time_sequence/*
+/distance_matrix/*
+/model/*
+/result/*
 
 # 忽略Vim交换文件
 *.swp
