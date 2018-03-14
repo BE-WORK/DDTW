@@ -128,5 +128,5 @@ if __name__ == '__main__':
         print g + ' ends: ' + str(datetime.datetime.now())
 
     end_test = datetime.datetime.now()
-    print 'Testing end_test time: ' + str(end_test)
+    print 'Testing end time: ' + str(end_test)
     print 'Testing cost: ' + str(end_test - start_test)
