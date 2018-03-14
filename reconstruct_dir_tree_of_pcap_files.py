@@ -17,9 +17,9 @@ def create_folder_for_each_page():
         for f in files:
             if cnt == 0:  # 创建子文件夹
                 sub_folder = '-'.join(f.split('-')[0:2])
-                if not os.path.exists('data_pcap/' + sub_folder):
-                    os.mkdir('data_pcap/' + sub_folder)
-            shutil.move('data_pcap/' + f, 'data_pcap/' + sub_folder)
+                if not os.path.exists('data_pcap/' + g + '/' + sub_folder):
+                    os.mkdir('data_pcap/' + g + '/' + sub_folder)
+            shutil.move('data_pcap/' + g + '/' + f, 'data_pcap/' + g + '/' + sub_folder)
             cnt += 1
             if cnt == 20:  # 每个网页都是20次获取
                 cnt = 0
